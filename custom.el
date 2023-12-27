@@ -16,10 +16,16 @@
 (setq centaur-tree-sitter t)                 ; Enable tree-sitter or not: t or nil. Only available in 29+.
 (setq centaur-player t)                        ; Enable players or not: t or nil
 
+(setq my/centaur-basic-font-size 100)       ; Overwrite this in custom-local.el
+
 ;; For Emacs devel
 ;; (setq package-user-dir (locate-user-emacs-file (format "elpa-%s" emacs-major-version)))
 ;; (setq desktop-base-file-name (format ".emacs-%s.desktop" emacs-major-version))
 ;; (setq desktop-base-lock-name (format ".emacs-%s.desktop.lock" emacs-major-version))
+
+;; Load local config for overriding
+(when (file-readable-p (expand-file-name  "custom-local.el" user-emacs-directory))
+  (load-file (expand-file-name  "custom-local.el" user-emacs-directory)))
 
 ;; Fonts
 (defun centaur-setup-fonts ()
