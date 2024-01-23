@@ -82,3 +82,5 @@ var/
 workspace/
 /custom-local.el
 *~
+/projectile.cache
+/projectile-bookmarks.eld
