@@ -52,9 +52,13 @@
 (setq select-enable-clipboard t)
 (setq select-enable-primary t)
 
-
+;; Load path (fix load path on OSX)
+(use-package exec-path-from-shell
+  :config
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize))
+  )
 
 ;;(load-file "~/.emacs.d/test.el")
 
 ;;; custom-post.el ends here
-;;
