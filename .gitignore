@@ -85,3 +85,4 @@ workspace/
 /projectile.cache
 /projectile-bookmarks.eld
 /quelpa/
+/org-persist/*
