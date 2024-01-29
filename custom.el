@@ -40,12 +40,13 @@
                                         :family font
                                         :height (cond (sys/macp 130)
                                                       (sys/win32p 110)
-                                                      (t (my/centaur-basic-font-size)))))
+                                                      (t my/centaur-basic-font-size))))
 
     ;; Set mode-line font
     ;; (cl-loop for font in '("Menlo" "SF Pro Display" "Helvetica")
     ;;          when (font-installed-p font)
     ;;          return (progn
+
     ;;                   (set-face-attribute 'mode-line nil :family font :height 120)
     ;;                   (when (facep 'mode-line-active)
     ;;                     (set-face-attribute 'mode-line-active nil :family font :height 120))
