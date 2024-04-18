@@ -31,7 +31,9 @@
          )
 
   :config
-  (setq copilot-indent-warning-suppress t)
+  (setq copilot-indent-warning-suppress t) ;; old setting
+  (setq copilot-indent-offset-warning-disable t) ;; new setting
+  (setq copilot-max-char 300000) ;; allow bigger files to be scanned (default is 100000)
 
   :bind (
 
