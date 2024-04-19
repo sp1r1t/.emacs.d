@@ -59,6 +59,12 @@
     (exec-path-from-shell-initialize))
   )
 
+;; Sort lines case insensitive
+(defun sort-lines-nocase ()
+  (interactive)
+  (let ((sort-fold-case t))
+    (call-interactively 'sort-lines)))
+
 ;;(load-file "~/.emacs.d/test.el")
 
 ;;; custom-post.el ends here
