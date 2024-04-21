@@ -62,8 +62,8 @@
 ;; Sort lines case insensitive
 (defun sort-lines-nocase ()
   (interactive)
-  (let ((sort-fold-case t))
-    (call-interactively 'sort-lines)))
+  (setq sort-fold-case t)
+  (call-interactively 'sort-lines))
 
 ;;(load-file "~/.emacs.d/test.el")
 
