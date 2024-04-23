@@ -65,6 +65,16 @@
   (let ((sort-fold-case t))
     (call-interactively 'sort-lines)))
 
+;; Ediff config
+(custom-set-faces
+ '(ediff-current-diff-A ((t (:background "#ffdddd"))))
+ '(ediff-current-diff-B ((t (:background "#ddffdd"))))
+ '(ediff-current-diff-C ((t (:background "#ddddff"))))
+ '(ediff-even-diff-A ((t (:background "#ffffff"))))
+ '(ediff-even-diff-B ((t (:background "#ffffff"))))
+ '(ediff-odd-diff-A ((t (:background "#eeeeee"))))
+ '(ediff-odd-diff-B ((t (:background "#eeeeee")))))
+
 ;;(load-file "~/.emacs.d/test.el")
 
 ;;; custom-post.el ends here
