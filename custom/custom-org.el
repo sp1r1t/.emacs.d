@@ -625,4 +625,22 @@ s   Search for keywords                 M   Like m, but only TODO entries
   (advice-add 'org-agenda-get-restriction-and-command :override #'my/org-agenda-get-restriction-and-command)
 
   )
+
+;; org clock
+(defun my/insert-custom-clock-entry ()
+  (interactive)
+  (insert "CLOCK: ")
+  (org-time-stamp-inactive)
+  (insert "--")
+  ;; Inserts the current time by default.
+  (let ((current-prefix-arg '(4))) (call-interactively 'org-time-stamp-inactive))
+  (org-ctrl-c-ctrl-c))
+
+;; Convenience Functions
+(defun insert-week-of-year ()
+  "Insert the current week of the year."
+  (interactive)
+  (let ((week-number (format-time-string "%U")))  ;; %U is the week of the year starting from Sunday
+    (insert week-number)))
+
 ;;; custom-org.el ends here
