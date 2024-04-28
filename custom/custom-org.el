@@ -35,7 +35,7 @@
        (setq org-refile-use-outline-path 'file)
        (setq org-outline-path-complete-in-steps nil)
 
-       (setq org-todo-keywords '((sequence "🎈(t)" "🔥(N)" "▶️(o)" "☎️(C)" "⏳(w)" "🫴(D)" "🚀(p)" "🔄(r)" "📜(n)" "💡(i)" "❔(m)" "✍(h)" "|" "✔️(d)" "❌(c)" )))
+       (setq org-todo-keywords '((sequence  "🎈(t)" "🔥(N)" "▶️(o)" "☎️(C)" "⏳(w)" "🫴(D)" "🚀(p)" "🔄(r)" "📜(n)" "💡(i)" "❔(m)" "✏️(s)"  "|" "✔️(d)" "❌(c)" )))
 
        (setq org-capture-templates
              `(("t" "🎈" entry (file ,(concat org-directory "/inbox.org"))
