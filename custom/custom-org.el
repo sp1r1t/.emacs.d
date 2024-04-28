@@ -289,7 +289,12 @@ with emoji characters."
                                    ;; match any of these groups, with the default order position of 99
                                    ))))))
                   )
-                 )
+                 ("w" "Agenda and TODOs from work"
+                  ((agenda "")
+                   (todo "")
+                   (tags ""))
+                  ((org-agenda-files '( "~/org/BEV.org")))
+                  ))
                )
          )
        )
