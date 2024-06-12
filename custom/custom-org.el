@@ -239,13 +239,15 @@ with emoji characters."
                                    :deadline past)
                                   (:name "Due soon"
                                    :deadline future)
-                                  :todo ("SOMEDAY" "MAYBE" "CHECK" "TO-READ" "TO-WATCH")
-                                  :order 100)
+                                  ;; :todo (org-todo-keywords)
+                                  (:order 100)
+                                  )
                                 (:name "Waiting..."
                                  :todo "WAITING"
                                  :order 98)
                                 (:name "Scheduled earlier"
-                                 :scheduled past))))))
+                                 :scheduled past)))))
+                  )
                  ("d" "Super default"
                   ((agenda "" ((org-super-agenda-groups
                                 '(;; Each gras an implicit boolean OR operator between its selec
@@ -290,9 +292,28 @@ with emoji characters."
                                    ))))))
                   )
                  ("w" "Agenda and TODOs from work"
-                  ((agenda "")
-                   (todo "")
-                   (tags ""))
+                  ((agenda "" ((org-super-agenda-groups
+                                '((:log t)  ; Automatically named "Log"
+                                  (:name "Schedule"
+                                   :time-grid t)
+                                  (:name "Today"
+                                   :scheduled today)
+                                  (:habit t)
+                                  (:name "Due today"
+                                   :deadline today)
+                                  (:name "Overdue"
+                                   :deadline past)
+                                  (:name "Due soon"
+                                   :deadline future)
+                                  ;; :todo (org-todo-keywords)
+                                  (:order 100)
+                                  )
+                                (:name "Waiting..."
+                                 :todo "WAITING"
+                                 :order 98)
+                                (:name "Scheduled earlier"
+                                 :scheduled past))))
+                   )
                   ((org-agenda-files '( "~/org/BEV.org")))
                   ))
                )
@@ -642,5 +663,6 @@ s   Search for keywords                 M   Like m, but only TODO entries
   (interactive)
   (let ((week-number (format-time-string "%U")))  ;; %U is the week of the year starting from Sunday
     (insert week-number)))
+
 
 ;;; custom-org.el ends here
