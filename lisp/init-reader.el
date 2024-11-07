@@ -89,9 +89,8 @@
 
   ;; Fix encoding issue on Windows
   (when sys/win32p
-    (setq process-coding-system-alist
-          (cons `(,nov-unzip-program . (gbk . gbk))
-                process-coding-system-alist))))
+    (add-to-list 'process-coding-system-alist
+                 `(,nov-unzip-program . (gbk . gbk)))))
 
 ;; Atom/RSS reader
 (use-package elfeed
@@ -198,12 +197,9 @@ browser defined by `browse-url-generic-program'."
       (let ((link (elfeed-entry-link elfeed-show-entry)))
         (when link
           (message "Sent to browser: %s" link)
-          (cond
-           ((featurep 'xwidget-internal)
-            (centaur-webkit-browse-url link))
-           (use-generic-p
-            (browse-url-generic link))
-           (t (browse-url link))))))
+          (if use-generic-p
+              (browse-url-generic link)
+            (centaur-browse-url link)))))
     (advice-add #'elfeed-show-visit :override #'my-elfeed-show-visit)
 
     (defun my-elfeed-search-browse-url (&optional use-generic-p)
@@ -215,12 +211,9 @@ browser defined by `browse-url-generic-program'."
         (cl-loop for entry in entries
                  do (elfeed-untag entry 'unread)
                  when (elfeed-entry-link entry)
-                 do (cond
-                     ((featurep 'xwidget-internal)
-                      (centaur-webkit-browse-url it t))
-                     (use-generic-p
-                      (browse-url-generic it))
-                     (t (browse-url it))))
+                 do (if use-generic-p
+                        (browse-url-generic it)
+                      (centaur-browse-url it)))
         (mapc #'elfeed-search-update-entry entries)
         (unless (or elfeed-search-remain-on-entry (use-region-p))
           (forward-line))))

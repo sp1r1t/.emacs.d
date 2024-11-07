@@ -25,7 +25,7 @@
 
 ;;; Commentary:
 ;;
-;; Define functions.
+;; Define some useful functions.
 ;;
 
 ;;; Code:
@@ -66,7 +66,7 @@
   (set-buffer-file-coding-system 'undecided-dos nil))
 
 (defun delete-dos-eol ()
-  "Delete `' characters in current region or buffer.
+  "Delete `' characters in current region or buffer.
 Same as '`replace-string' `C-q' `C-m' `RET' `RET''."
   (interactive)
   (save-excursion
@@ -77,7 +77,7 @@ Same as '`replace-string' `C-q' `C-m' `RET' `RET''."
       (while (search-forward "\r" nil t)
         (replace-match "" nil t)
         (setq count (1+ count)))
-      (message "Removed %d " count))
+      (message "Removed %d " count))
     (widen)))
 
 ;; File and buffer
@@ -132,18 +132,49 @@ Same as '`replace-string' `C-q' `C-m' `RET' `RET''."
           (message "Copied '%s'" filename))
       (warn "Current buffer is not attached to a file!"))))
 
-;; Browse URL
-(defun centaur-webkit-browse-url (url &optional pop-buffer new-session)
-  "Browse URL with xwidget-webkit' and switch or pop to the buffer.
+(defun create-scratch-buffer ()
+  "Create a scratch buffer."
+  (interactive)
+  (switch-to-buffer (get-buffer-create "*scratch*"))
+  (lisp-interaction-mode))
 
-  POP-BUFFER specifies whether to pop to the buffer.
-  NEW-SESSION specifies whether to create a new xwidget-webkit session."
+(defun save-buffer-as-utf8 (coding-system)
+  "Revert a buffer with `CODING-SYSTEM' and save as UTF-8."
+  (interactive "zCoding system for visited file (default nil):")
+  (revert-buffer-with-coding-system coding-system)
+  (set-buffer-file-coding-system 'utf-8)
+  (save-buffer))
+
+(defun save-buffer-gbk-as-utf8 ()
+  "Revert a buffer with GBK and save as UTF-8."
+  (interactive)
+  (save-buffer-as-utf8 'gbk))
+
+(defun selected-region-or-symbol-at-point ()
+  "Return the selected region, otherwise return the symbol at point."
+  (if (region-active-p)
+      (buffer-substring-no-properties (region-beginning) (region-end))
+    (thing-at-point 'symbol t)))
+
+;; Browse URL
+(defun centaur-browse-url (url)
+  "Open URL using a configurable method.
+See `browse-url' for more details."
   (interactive (progn
                  (require 'browse-url)
-                 (browse-url-interactive-arg "xwidget-webkit URL: ")))
-  (or (featurep 'xwidget-internal)
-      (user-error "Your Emacs was not compiled with xwidgets support"))
+                 (browse-url-interactive-arg "URL: ")))
+  (if (and (featurep 'xwidget-internal) (display-graphic-p))
+      (centaur-webkit-browse-url url t)
+    (browse-url url)))
 
+(defun centaur-webkit-browse-url (url &optional pop-buffer new-session)
+  "Browse URL with xwidget-webkit' and switch or pop to the buffer.
+  POP-BUFFER specifies whether to pop to the buffer.
+  NEW-SESSION specifies whether to create a new xwidget-webkit session.
+  Interactively, URL defaults to the string looking like a url around point."
+  (interactive (progn
+                 (require 'browse-url)
+                 (browse-url-interactive-arg "URL: ")))
   (xwidget-webkit-browse-url url new-session)
   (let ((buf (xwidget-buffer (xwidget-webkit-current-session))))
     (when (buffer-live-p buf)
@@ -188,24 +219,6 @@ Same as '`replace-string' `C-q' `C-m' `RET' `RET''."
     (find-file-other-window centaur-custom-post-file)))
 
 ;; Misc
-(defun create-scratch-buffer ()
-  "Create a scratch buffer."
-  (interactive)
-  (switch-to-buffer (get-buffer-create "*scratch*"))
-  (lisp-interaction-mode))
-
-(defun save-buffer-as-utf8 (coding-system)
-  "Revert a buffer with `CODING-SYSTEM' and save as UTF-8."
-  (interactive "zCoding system for visited file (default nil):")
-  (revert-buffer-with-coding-system coding-system)
-  (set-buffer-file-coding-system 'utf-8)
-  (save-buffer))
-
-(defun save-buffer-gbk-as-utf8 ()
-  "Revert a buffer with GBK and save as UTF-8."
-  (interactive)
-  (save-buffer-as-utf8 'gbk))
-
 (defun byte-compile-elpa ()
   "Compile packages in elpa directory. Useful if you switch Emacs versions."
   (interactive)
@@ -242,7 +255,7 @@ Same as '`replace-string' `C-q' `C-m' `RET' `RET''."
 
 (defun centaur-treesit-available-p ()
   "Check whether tree-sitter is available.
-Native tree-sitter is introduced since 29.1."
+  Native tree-sitter is introduced since 29.1."
   (and centaur-tree-sitter
        (fboundp 'treesit-available-p)
        (treesit-available-p)))
@@ -259,14 +272,14 @@ Native tree-sitter is introduced since 29.1."
       (goto-char (point-min))
       (while (re-search-forward
               (format "^[\t ]*[;]*[\t ]*(setq %s .*)" variable)
-              nil t)
-        (replace-match (format "(setq %s '%s)" variable value) nil nil))
+                               nil t)
+  (replace-match (format "(setq %s '%s)" variable value) nil nil))
       (write-region nil nil custom-file)
       (message "Saved %s (%s) to %s" variable value custom-file))))
 
 (defun too-long-file-p ()
   "Check whether the file is too long."
-  (or (> (buffer-size) 100000)
+  (or (> (buffer-size) 500000)
       (and (fboundp 'buffer-line-statistics)
            (> (car (buffer-line-statistics)) 10000))))
 
@@ -341,6 +354,30 @@ Return the fastest package archive."
 
     ;; Return the fastest
     fastest))
+
+(defun set-from-minibuffer (sym)
+  "Set SYM value from minibuffer."
+  (eval-expression
+   (minibuffer-with-setup-hook
+       (lambda ()
+         (add-function :before-until (local 'eldoc-documentation-function)
+           #'elisp-eldoc-documentation-function)
+         (run-hooks 'eval-expression-minibuffer-setup-hook)
+         (goto-char (minibuffer-prompt-end))
+         (forward-char (length (format "(setq %S " sym))))
+     (read-from-minibuffer
+      "Eval: "
+      (let ((sym-value (symbol-value sym)))
+        (format
+         (if (or (consp sym-value)
+                 (and (symbolp sym-value)
+                      (not (null sym-value))
+                      (not (keywordp sym-value))))
+             "(setq %s '%S)"
+           "(setq %s %S)")
+         sym sym-value))
+      read-expression-map t
+      'read-expression-history))))
 
 ;; WORKAROUND: fix blank screen issue on macOS.
 (defun fix-fullscreen-cocoa ()
@@ -467,7 +504,7 @@ This issue has been addressed in 28."
 
 (defun centaur--load-theme (theme)
   "Disable others and enable new THEME."
-  (when-let ((theme (centaur--theme-name theme)))
+  (when-let* ((theme (centaur--theme-name theme)))
     (mapc #'disable-theme custom-enabled-themes)
     (load-theme theme t)))
 
@@ -625,36 +662,36 @@ This issue has been addressed in 28."
 
 
 ;; Network Proxy
-(defun proxy-http-show ()
+(defun show-http-proxy ()
   "Show HTTP/HTTPS proxy."
   (interactive)
   (if url-proxy-services
       (message "Current HTTP proxy is `%s'" centaur-proxy)
     (message "No HTTP proxy")))
 
-(defun proxy-http-enable ()
+(defun enable-http-proxy ()
   "Enable HTTP/HTTPS proxy."
   (interactive)
   (setq url-proxy-services
         `(("http" . ,centaur-proxy)
           ("https" . ,centaur-proxy)
           ("no_proxy" . "^\\(localhost\\|192.168.*\\|10.*\\)")))
-  (proxy-http-show))
+  (show-http-proxy))
 
-(defun proxy-http-disable ()
+(defun disable-http-proxy ()
   "Disable HTTP/HTTPS proxy."
   (interactive)
   (setq url-proxy-services nil)
-  (proxy-http-show))
+  (show-http-proxy))
 
-(defun proxy-http-toggle ()
+(defun toggle-http-proxy ()
   "Toggle HTTP/HTTPS proxy."
   (interactive)
   (if (bound-and-true-p url-proxy-services)
-      (proxy-http-disable)
-    (proxy-http-enable)))
+      (disable-http-proxy)
+    (enable-http-proxy)))
 
-(defun proxy-socks-show ()
+(defun show-socks-proxy ()
   "Show SOCKS proxy."
   (interactive)
   (if (bound-and-true-p socks-noproxy)
@@ -662,7 +699,7 @@ This issue has been addressed in 28."
                (cadddr socks-server) (cadr socks-server) (caddr socks-server))
     (message "No SOCKS proxy")))
 
-(defun proxy-socks-enable ()
+(defun enable-socks-proxy ()
   "Enable SOCKS proxy."
   (interactive)
   (require 'socks)
@@ -673,23 +710,41 @@ This issue has been addressed in 28."
          (port (string-to-number (cadr proxy))))
     (setq socks-server `("Default server" ,host ,port 5)))
   (setenv "all_proxy" (concat "socks5://" centaur-socks-proxy))
-  (proxy-socks-show))
+  (show-socks-proxy))
 
-(defun proxy-socks-disable ()
+(defun disable-socks-proxy ()
   "Disable SOCKS proxy."
   (interactive)
   (setq url-gateway-method 'native
         socks-noproxy nil
         socks-server nil)
   (setenv "all_proxy" "")
-  (proxy-socks-show))
+  (show-socks-proxy))
 
-(defun proxy-socks-toggle ()
+(defun toggle-socks-proxy ()
   "Toggle SOCKS proxy."
   (interactive)
-  (if (bound-and-true-p socks-noproxy)
-      (proxy-socks-disable)
-    (proxy-socks-enable)))
+  (if (bound-and-true-p socks-server)
+      (disable-socks-proxy)
+    (enable-socks-proxy)))
+
+(defun enable-proxy ()
+  "Enbale proxy."
+  (interactive)
+  (enable-http-proxy)
+  (enable-socks-proxy))
+
+(defun disable-proxy ()
+  "Disable proxy."
+  (interactive)
+  (disable-http-proxy)
+  (disable-socks-proxy))
+
+(defun toggle-proxy ()
+  "Toggle proxy."
+  (interactive)
+  (toggle-http-proxy)
+  (toggle-socks-proxy))
 
 (provide 'init-funcs)
 
