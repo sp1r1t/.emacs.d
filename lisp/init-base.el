@@ -91,10 +91,20 @@
 ;; Set UTF-8 as the default coding system
 (when (fboundp 'set-charset-priority)
   (set-charset-priority 'unicode))
-(prefer-coding-system 'utf-8)
+(set-language-environment "UTF-8")
+(set-default-coding-systems 'utf-8)
+(set-buffer-file-coding-system 'utf-8)
+(set-clipboard-coding-system 'utf-8)
+(set-file-name-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-next-selection-coding-system 'utf-8)
+(set-selection-coding-system 'utf-8)
+(set-terminal-coding-system 'utf-8)
 (setq locale-coding-system 'utf-8)
 (setq system-time-locale "C")
-(unless sys/win32p
+(if sys/win32p
+    (add-to-list 'process-coding-system-alist
+                 '("cmdproxy" utf-8 . gbk))
   (set-selection-coding-system 'utf-8))
 
 ;; Environment
@@ -163,7 +173,7 @@
   (with-no-warnings
     (defun my-list-processes--prettify ()
       "Prettify process list."
-      (when-let ((entries tabulated-list-entries))
+      (when-let* ((entries tabulated-list-entries))
         (setq tabulated-list-entries nil)
         (dolist (p (process-list))
           (when-let* ((val (cadr (assoc p entries)))
@@ -207,6 +217,7 @@
 
 ;; Frame
 (when (display-graphic-p)
+  ;; Frame fullscreen
   (add-hook 'window-setup-hook #'fix-fullscreen-cocoa)
   (bind-key "S-s-<return>" #'toggle-frame-fullscreen)
   (and sys/mac-x-p (bind-key "C-s-f" #'toggle-frame-fullscreen))
@@ -218,16 +229,21 @@
              ("C-M-<left>"      . centaur-frame-left-half)
              ("C-M-<right>"     . centaur-frame-right-half)
              ("C-M-<up>"        . centaur-frame-top-half)
-             ("C-M-<down>"      . centaur-frame-bottom-half)))
+             ("C-M-<down>"      . centaur-frame-bottom-half))
+
+  ;; Frame transparence
+  (use-package transwin
+    :bind (("C-M-9" . transwin-inc)
+           ("C-M-8" . transwin-dec)
+           ("C-M-7" . transwin-toggle))
+    :init
+    (when sys/linux-x-p
+      (setq transwin-parameter-alpha 'alpha-background))))
 
 ;; Global keybindings
 (bind-keys ("s-r"     . revert-this-buffer)
            ("C-x K"   . delete-this-file)
            ("C-c C-l" . reload-init-file))
-
-;; Sqlite
-(when (fboundp 'sqlite-open)
-  (use-package emacsql-sqlite-builtin))
 
 (provide 'init-base)
 
