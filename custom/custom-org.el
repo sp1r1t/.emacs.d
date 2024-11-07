@@ -127,14 +127,14 @@ with emoji characters."
 
 
   ;; Set export directory
-  ;; (defun org-export-output-file-name-modified (orig-fun extension &optional subtreep pub-dir)
-  ;;   (unless pub-dir
-  ;;     (setq pub-dir "exports")
-  ;;     (unless (file-directory-p pub-dir)
-  ;;       (make-directory pub-dir)))
-  ;;   (apply orig-fun extension subtreep pub-dir nil))
-  ;; (advice-add 'org-export-output-file-name
-  ;;             :around #'org-export-output-file-name-modified)
+  (defun org-export-output-file-name-modified (orig-fun extension &optional subtreep pub-dir)
+    (unless pub-dir
+      (setq pub-dir "exports")
+      (unless (file-directory-p pub-dir)
+        (make-directory pub-dir)))
+    (apply orig-fun extension subtreep pub-dir nil))
+  (advice-add 'org-export-output-file-name
+              :around #'org-export-output-file-name-modified)
 
 
   ;; Org download
@@ -285,12 +285,13 @@ with emoji characters."
                                     :order 9)
                                    (:priority<= "B"
                                     ;; Show this section after "Today" and "Important", because
-                                    ≈b                                    ;; their order is unspecified, defaulting to 0. Sections
+                                    ;; their order is unspecified, defaulting to 0. Sections
                                     ;; are displayed lowest-number-first.
                                     :order 1)
                                    ;; After the last group, the agenda will display items that didn't
                                    ;; match any of these groups, with the default order position of 99
                                    ))))))
+                 )
                  ("w" "Agenda and TODOs from work"
                   ((agenda "" ((org-super-agenda-groups
                                 '((:log t)  ; Automatically named "Log"
@@ -314,7 +315,7 @@ with emoji characters."
                                 (:name "Scheduled earlier"
                                  :scheduled past))))
                    )
-                  ((org-agenda-files '( "~/org/BEV.org")))
+                  ((org-agenda-files '( "~/org/evo.org")))
                   ))
                )
          )
@@ -664,5 +665,7 @@ s   Search for keywords                 M   Like m, but only TODO entries
   (let ((week-number (format-time-string "%U")))  ;; %U is the week of the year starting from Sunday
     (insert week-number)))
 
+;; custom keybindings
+(global-set-key (kbd "C-c l s") 'org-store-link)
 
 ;;; custom-org.el ends here
