@@ -136,61 +136,51 @@ FACE defaults to inheriting from default and highlight."
     (advice-add #'deactivate-mark :after #'turn-on-symbol-overlay)))
 
 ;; Highlight indentions
-(use-package highlight-indent-guides
-  :diminish
-  :hook ((prog-mode yaml-mode) . (lambda ()
-                                   "Highlight indentations in small files for better performance."
-                                   (unless (too-long-file-p)
-                                     (highlight-indent-guides-mode 1))))
-  :init (setq highlight-indent-guides-method 'character
-              highlight-indent-guides-responsive 'top
-              highlight-indent-guides-suppress-auto-error t)
-  :config
-  (with-no-warnings
-    ;; Don't display first level of indentation
-    (defun my-indent-guides-for-all-but-first-column (level responsive display)
-      (unless (< level 1)
-        (highlight-indent-guides--highlighter-default level responsive display)))
-    (setq highlight-indent-guides-highlighter-function
-          #'my-indent-guides-for-all-but-first-column)
-
-    ;; Disable in `macrostep' expanding
-    (with-eval-after-load 'macrostep
-      (advice-add #'macrostep-expand
-                  :after (lambda (&rest _)
-                           (when highlight-indent-guides-mode
-                             (highlight-indent-guides-mode -1))))
-      (advice-add #'macrostep-collapse
-                  :after (lambda (&rest _)
-                           (when (derived-mode-p 'prog-mode 'yaml-mode)
-                             (highlight-indent-guides-mode 1)))))))
+(use-package indent-bars
+  :custom
+  (indent-bars-treesit-support centaur-tree-sitter)
+  (indent-bars-no-descend-string t)
+  (indent-bars-treesit-ignore-blank-lines-types '("module"))
+  (indent-bars-prefer-character t)
+  (indent-bars-treesit-scope '((python function_definition class_definition for_statement
+				                       if_statement with_statement while_statement)))
+  :hook ((prog-mode yaml-mode) . indent-bars-mode)
+  :config (require 'indent-bars-ts))
 
 ;; Colorize color names in buffers
-(use-package rainbow-mode
-  :diminish
-  :defines helpful-mode-map
-  :bind (:map help-mode-map
-         ("w" . rainbow-mode))
-  :hook ((html-mode php-mode helpful-mode) . rainbow-mode)
-  :init (with-eval-after-load 'helpful
-          (bind-key "w" #'rainbow-mode helpful-mode-map))
-  :config
-  (with-no-warnings
-    ;; HACK: Use overlay instead of text properties to override `hl-line' faces.
-    ;; @see https://emacs.stackexchange.com/questions/36420
-    (defun my-rainbow-colorize-match (color &optional match)
-      (let* ((match (or match 0))
-             (ov (make-overlay (match-beginning match) (match-end match))))
-        (overlay-put ov 'ovrainbow t)
-        (overlay-put ov 'face `((:foreground ,(if (> 0.5 (rainbow-x-color-luminance color))
-                                                  "white" "black"))
-                                (:background ,color)))))
-    (advice-add #'rainbow-colorize-match :override #'my-rainbow-colorize-match)
+(if emacs/>=28p
+    (use-package colorful-mode
+      :diminish
+      :hook (after-init . global-colorful-mode)
+      :init (setq colorful-use-prefix t
+                  colorful-prefix-string "⬤")
+      :config (dolist (mode '(html-mode php-mode help-mode helpful-mode))
+                (add-to-list 'global-colorful-modes mode)))
+  (use-package rainbow-mode
+    :diminish
+    :defines helpful-mode-map
+    :bind (:map help-mode-map
+           ("w" . rainbow-mode))
+    :hook ((mhtml-mode html-mode html-ts-mode php-mode latex-mode help-mode helpful-mode) . rainbow-mode)
+    :init (with-eval-after-load 'helpful
+            (bind-key "w" #'rainbow-mode helpful-mode-map))
+    :config
+    (with-no-warnings
+      ;; HACK: Use overlay instead of text properties to override `hl-line' faces.
+      ;; @see https://emacs.stackexchange.com/questions/36420
+      (defun my-rainbow-colorize-match (color &optional match)
+        (let* ((match (or match 0))
+               (ov (make-overlay (match-beginning match) (match-end match))))
+          (overlay-put ov 'ovrainbow t)
+          (overlay-put ov 'face `((:foreground ,(if (> 0.5 (rainbow-x-color-luminance color))
+                                                    "white" "black"))
+                                  (:background ,color)))))
+      (advice-add #'rainbow-colorize-match :override #'my-rainbow-colorize-match)
 
-    (defun my-rainbow-clear-overlays ()
-      "Clear all rainbow overlays."
-      (remove-overlays (point-min) (point-max) 'ovrainbow t))
-    (advice-add #'rainbow-turn-off :after #'my-rainbow-clear-overlays)))
+      (defun my-rainbow-clear-overlays ()
+        "Clear all rainbow overlays."
+        (remove-overlays (point-min) (point-max) 'ovrainbow t))
+      (advice-add #'rainbow-turn-off :after #'my-rainbow-clear-overlays))))
 
 ;; Highlight brackets according to their depth
 (use-package rainbow-delimiters
@@ -202,11 +192,12 @@ FACE defaults to inheriting from default and highlight."
   (hl-todo ((t (:inherit default :height 0.9 :width condensed :weight bold :underline nil :inverse-video t))))
   :bind (:map hl-todo-mode-map
          ([C-f3]    . hl-todo-occur)
+         ("C-c t o" . hl-todo-occur)
          ("C-c t p" . hl-todo-previous)
          ("C-c t n" . hl-todo-next)
-         ("C-c t o" . hl-todo-occur)
+         ("C-c t i" . hl-todo-insert)
          ("C-c t r" . hl-todo-rg-project)
-         ("C-c t i" . hl-todo-insert))
+         ("C-c t R" . hl-todo-rg))
   :hook ((after-init . global-hl-todo-mode)
          (hl-todo-mode . (lambda ()
                            (add-hook 'flymake-diagnostic-functions
@@ -316,8 +307,7 @@ FACE defaults to inheriting from default and highlight."
                    aw-select toggle-window-split
                    windmove-do-window-select
                    pager-page-down pager-page-up
-                   treemacs-select-window
-                   symbol-overlay-basic-jump))
+                   treemacs-select-window))
       (advice-add cmd :after #'my-pulse-momentary-line))
 
     (dolist (cmd '(pop-to-mark-command
