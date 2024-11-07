@@ -23,7 +23,7 @@
   :quelpa (copilot :fetcher github
                    :repo "copilot-emacs/copilot.el"
                    :branch "main"
-                   :files ("dist" "*.el")
+                   :files ("*.el")
                    )
   :hook (
          (org-mode  .  (lambda() (copilot-mode -1)))
