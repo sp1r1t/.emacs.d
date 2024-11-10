@@ -146,7 +146,7 @@
   (w32-register-hot-key [s-t]))
  ((eq window-system 'mac)
   ;; Compatible with Emacs Mac port
-  (setq mac-option-modifier 'meta
+  (setq mac-option-modifier 'hyper
         mac-command-modifier 'super)
   (global-set-key [(super a)] #'mark-whole-buffer)
   (global-set-key [(super v)] #'yank)

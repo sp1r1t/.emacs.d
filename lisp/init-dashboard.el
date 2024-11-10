@@ -48,7 +48,6 @@
       (("U" update-config-and-packages "update" :exit t)
        ("H" browse-homepage "homepage" :exit t)
        ("R" restore-session "recover session" :exit t)
-       ("L" restore-session "list sessions" :exit t)
        ("S" find-custom-file "settings" :exit t))
       "Section"
       (("}" dashboard-next-section "next")
@@ -71,18 +70,12 @@
            :map dashboard-mode-map
            ("H" . browse-homepage)
            ("R" . restore-session)
-           ("L" . restore-session)
            ("S" . find-custom-file)
            ("U" . update-config-and-packages)
            ("q" . quit-dashboard)
            ("h" . dashboard-hydra/body)
            ("?" . dashboard-hydra/body))
-    :hook (dashboard-mode . (lambda ()
-                              ;; No title
-                              (setq-local frame-title-format nil)
-                              ;; Enable `page-break-lines-mode'
-                              (when (fboundp 'page-break-lines-mode)
-                                (page-break-lines-mode 1))))
+    :hook (dashboard-mode . (lambda () (setq-local frame-title-format nil)))
     :init
     (setq dashboard-banner-logo-title "CENTAUR EMACS - Enjoy Programming & Writing"
           dashboard-startup-banner (or centaur-logo 'official)
@@ -91,10 +84,22 @@
           dashboard-path-style 'truncate-middle
           dashboard-path-max-length 60
           dashboard-center-content t
+          dashboard-vertically-center-content t
           dashboard-show-shortcuts nil
           dashboard-items '((recents  . 10)
                             (bookmarks . 5)
                             (projects . 5))
+
+          dashboard-startupify-list '(dashboard-insert-banner
+                                      dashboard-insert-newline
+                                      dashboard-insert-banner-title
+                                      dashboard-insert-newline
+                                      dashboard-insert-navigator
+                                      dashboard-insert-newline
+                                      dashboard-insert-init-info
+                                      dashboard-insert-items
+                                      dashboard-insert-newline
+                                      dashboard-insert-footer)
 
           dashboard-display-icons-p #'icons-displayable-p
           dashboard-set-file-icons centaur-icon
@@ -105,7 +110,6 @@
                                     (projects  . "nf-oct-briefcase")
                                     (registers . "nf-oct-database"))
 
-          dashboard-set-navigator t
           dashboard-navigator-buttons
           `(((,(when (icons-displayable-p)
                  (nerd-icons-mdicon "nf-md-github" :height 1.4))
@@ -129,7 +133,6 @@
               "" "Help (?/h)"
               (lambda (&rest _) (dashboard-hydra/body)))))
 
-          dashboard-set-footer t
           dashboard-footer-icon
           (if (icons-displayable-p)
               (nerd-icons-octicon "nf-oct-heart" :height 1.2 :face 'nerd-icons-lred)
@@ -141,10 +144,9 @@
     ;; @see https://github.com/emacs-dashboard/emacs-dashboard/issues/219
     (defun my-dashboard-insert-copyright ()
       "Insert copyright in the footer."
-      (when dashboard-set-footer
-        (dashboard-insert-center
-         (propertize (format "\nPowered by Vincent Zhang, %s\n" (format-time-string "%Y"))
-                     'face 'font-lock-comment-face))))
+      (dashboard-insert-center
+       (propertize (format "\nPowered by Vincent Zhang, %s\n" (format-time-string "%Y"))
+                   'face 'font-lock-comment-face)))
     (advice-add #'dashboard-insert-footer :after #'my-dashboard-insert-copyright)
 
     (defun restore-session ()
@@ -152,7 +154,11 @@
       (interactive)
       (message "Restoring previous session...")
       (quit-window t)
-      (desktop-read)
+      (cond
+       ((bound-and-true-p tabspaces-mode)
+        (tabspaces-restore-session))
+       ((bound-and-true-p desktop-save-mode)
+        (desktop-read)))
       (message "Restoring previous session...done"))
 
     (defun dashboard-goto-recent-files ()

@@ -118,7 +118,12 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-agenda-files nil))
+ '(org-agenda-files
+   '("/Users/jinn/org/7bit.org" "/Users/jinn/org/evo.org" "/Users/jinn/org/Document.org" "/Users/jinn/org/Menschen.org" "/Users/jinn/org/Verborgt.org" "/Users/jinn/org/WMS.org" "/Users/jinn/org/articles.org" "/Users/jinn/org/body.org" "/Users/jinn/org/cwc-website.org" "/Users/jinn/org/emacs.org" "/Users/jinn/org/finanzen.org" "/Users/jinn/org/haushalt.org" "/Users/jinn/org/inbox.org" "/Users/jinn/org/job.org" "/Users/jinn/org/linuxlog.org" "/Users/jinn/org/mind.org" "/Users/jinn/org/projects.org" "/Users/jinn/org/someday.org" "/Users/jinn/org/tickler.org" "/Users/jinn/org/wochenmenu.org"))
+ '(org-html-postamble 'auto)
+ '(org-html-postamble-format
+   '(("en" "<p class=\"author\">Author: %a (%e)</p>\12<p class=\"date\">Date: %d</p>")))
+ '(org-html-preamble t))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
