@@ -20,8 +20,10 @@
 
   (eval-after-load 'org
     '(progn
-       (setq org-agenda-files (list (symbol-value 'org-directory)
-                                    (expand-file-name "tmpagenda" (symbol-value 'org-directory))))
+       (setq org-agenda-files (list
+                               (symbol-value 'org-directory)
+                               ;; (expand-file-name "tmpagenda" (symbol-value 'org-directory))
+                               ))
        (setq org-refile-targets
              `(
                (nil :maxlevel . 4)
@@ -642,5 +644,8 @@ s   Search for keywords                 M   Like m, but only TODO entries
   (interactive)
   (let ((week-number (format-time-string "%U")))  ;; %U is the week of the year starting from Sunday
     (insert week-number)))
+
+;; custom keybindings
+(global-set-key (kbd "C-c l s") 'org-store-link)
 
 ;;; custom-org.el ends here
