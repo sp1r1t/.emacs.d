@@ -75,6 +75,7 @@
  '(ediff-odd-diff-A ((t (:background "#eeeeee"))))
  '(ediff-odd-diff-B ((t (:background "#eeeeee")))))
 
+
 ;;(load-file "~/.emacs.d/test.el")
 
 ;;; custom-post.el ends here
