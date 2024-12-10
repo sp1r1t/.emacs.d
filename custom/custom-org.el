@@ -669,4 +669,7 @@ s   Search for keywords                 M   Like m, but only TODO entries
 ;; custom keybindings
 (global-set-key (kbd "C-c l s") 'org-store-link)
 
+;; don't evaluate babel on save
+(setq org-export-babel-evaluate nil)
+
 ;;; custom-org.el ends here
