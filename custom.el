@@ -138,4 +138,20 @@
  '(ediff-odd-diff-A ((t (:background "#eeeeee"))))
  '(ediff-odd-diff-B ((t (:background "#eeeeee")))))
 
+;; OSX/mac config
+(setq mac-option-modifier 'nil)
+(setq mac-function-modifier 'meta)
+(setq mac-command-modifier 'super)
+
+
+;; corfu
+;; corfu complete on tab
+(define-key corfu-map [tab] 'corfu-complete)
+(define-key corfu-map [?\t] 'corfu-complete)
+
+;; disable corfu complete on enter
+(define-key corfu-map [return] nil)
+(define-key corfu-map [?\r] nil)
+
+
 ;;; custom.el ends here
