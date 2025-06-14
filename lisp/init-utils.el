@@ -39,9 +39,9 @@
               which-key-lighter nil
               which-key-show-remaining-keys t)
   :config
-  (which-key-add-key-based-replacements "C-c !" "flycheck")
   (which-key-add-key-based-replacements "C-c &" "yasnippet")
   (which-key-add-key-based-replacements "C-c @" "hideshow")
+  (which-key-add-key-based-replacements "C-c c" "consult")
   (which-key-add-key-based-replacements "C-c d" "dict")
   (which-key-add-key-based-replacements "C-c l" "link-hint")
   (which-key-add-key-based-replacements "C-c n" "org-roam")
@@ -52,8 +52,9 @@
   (which-key-add-key-based-replacements "C-x 8 e" "emoji")
   (which-key-add-key-based-replacements "C-x @" "modifior")
   (which-key-add-key-based-replacements "C-x a" "abbrev")
-  (which-key-add-key-based-replacements "C-x c" "citre")
+  (which-key-add-key-based-replacements "C-x c" "colorful")
   (which-key-add-key-based-replacements "C-x n" "narrow")
+  (which-key-add-key-based-replacements "C-x p" "project")
   (which-key-add-key-based-replacements "C-x r" "rect & bookmark")
   (which-key-add-key-based-replacements "C-x t" "tab & treemacs")
   (which-key-add-key-based-replacements "C-x x" "buffer")
@@ -138,10 +139,8 @@
          ("c" . rg-dwim-current-dir)
          ("f" . rg-dwim-current-file)
          ("m" . rg-menu))
-  :init (setq rg-group-result t
-              rg-show-columns t)
-  :config
-  (cl-pushnew '("tmpl" . "*.tmpl") rg-custom-type-aliases))
+  :init (setq rg-show-columns t)
+  :config (add-to-list 'rg-custom-type-aliases '("tmpl" . "*.tmpl")))
 
 ;; A Simple and cool pomodoro timer
 (use-package pomidor
@@ -172,7 +171,7 @@
   (when (fboundp 'gfm-mode)
     (setq atomic-chrome-url-major-mode-alist
           '(("github\\.com" . gfm-mode)
-            ("gitlab\\.com" . gfm-mode)))))
+            ("gitlab\\.*"   . gfm-mode)))))
 
 ;; Process
 (use-package proced
@@ -223,17 +222,17 @@
 ;; text mode directory tree
 (use-package ztree
   :custom-face
-  (ztreep-header-face ((t (:inherit diff-header))))
-  (ztreep-arrow-face ((t (:inherit font-lock-comment-face))))
-  (ztreep-leaf-face ((t (:inherit diff-index))))
-  (ztreep-node-face ((t (:inherit font-lock-variable-name-face))))
+  (ztreep-header-face ((t (:inherit diff-header :foreground unspecified))))
+  (ztreep-arrow-face ((t (:inherit font-lock-comment-face :foreground unspecified))))
+  (ztreep-leaf-face ((t (:inherit diff-index :foreground unspecified))))
+  (ztreep-node-face ((t (:inherit font-lock-variable-name-face :foreground unspecified))))
   (ztreep-expand-sign-face ((t (:inherit font-lock-function-name-face))))
-  (ztreep-diff-header-face ((t (:inherit (diff-header bold)))))
-  (ztreep-diff-header-small-face ((t (:inherit diff-file-header))))
-  (ztreep-diff-model-normal-face ((t (:inherit font-lock-doc-face))))
-  (ztreep-diff-model-ignored-face ((t (:inherit font-lock-doc-face :strike-through t))))
-  (ztreep-diff-model-diff-face ((t (:inherit diff-removed))))
-  (ztreep-diff-model-add-face ((t (:inherit diff-nonexistent))))
+  (ztreep-diff-header-face ((t (:inherit (diff-header bold :foreground unspecified)))))
+  (ztreep-diff-header-small-face ((t (:inherit diff-file-header :foreground unspecified))))
+  (ztreep-diff-model-normal-face ((t (:inherit font-lock-doc-face :foreground unspecified))))
+  (ztreep-diff-model-ignored-face ((t (:inherit font-lock-doc-face :strike-through t :foreground unspecified))))
+  (ztreep-diff-model-diff-face ((t (:inherit diff-removed :foreground unspecified))))
+  (ztreep-diff-model-add-face ((t (:inherit diff-nonexistent :foreground unspecified))))
   :pretty-hydra
   ((:title (pretty-hydra-title "Ztree" 'octicon "nf-oct-diff" :face 'nerd-icons-green)
     :color pink :quit-key ("q" "C-g"))

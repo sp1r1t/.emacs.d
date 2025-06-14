@@ -30,21 +30,6 @@
 
 ;;; Code:
 
-;; A few more useful configurations...
-(use-package emacs
-  :init
-  ;; TAB cycle if there are only few candidates
-  (setq completion-cycle-threshold 3)
-
-  ;; Only list the commands of the current modes
-  (when (boundp 'read-extended-command-predicate)
-    (setq read-extended-command-predicate
-          #'command-completion-default-include-p))
-
-  ;; Enable indentation+completion using the TAB key.
-  ;; `completion-at-point' is often bound to M-TAB.
-  (setq tab-always-indent 'complete))
-
 ;; Optionally use the `orderless' completion style.
 (use-package orderless
   :custom
@@ -62,6 +47,7 @@
   (add-to-list 'orderless-matching-styles 'completion--regex-pinyin))
 
 (use-package vertico
+  :custom (vertico-count 15)
   :bind (:map vertico-map
          ("RET" . vertico-directory-enter)
          ("DEL" . vertico-directory-delete-char)
@@ -94,14 +80,15 @@
          ("C-c i"   . consult-info)
          ("C-c r"   . consult-ripgrep)
          ("C-c T"   . consult-theme)
+         ("C-."     . consult-imenu)
 
          ("C-c c e" . consult-colors-emacs)
          ("C-c c w" . consult-colors-web)
          ("C-c c f" . describe-face)
+         ("C-c c l" . find-library)
          ("C-c c t" . consult-theme)
 
          ([remap Info-search]        . consult-info)
-         ([remap imenu]              . consult-imenu)
          ([remap isearch-forward]    . consult-line)
          ([remap recentf-open-files] . consult-recent-file)
 
@@ -113,50 +100,41 @@
          ("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
          ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
          ;; Custom M-# bindings for fast register access
-         ("M-#"   . consult-register-load)
-         ("M-'"   . consult-register-store)        ;; orig. abbrev-prefix-mark (unrelated)
-         ("C-M-#" . consult-register)
+         ("M-#"     . consult-register-load)
+         ("M-'"     . consult-register-store)        ;; orig. abbrev-prefix-mark (unrelated)
+         ("C-M-#"   . consult-register)
          ;; Other custom bindings
-         ("M-y" . consult-yank-pop)                ;; orig. yank-pop
+         ("M-y"     . consult-yank-pop)                ;; orig. yank-pop
          ;; M-g bindings in `goto-map'
-         ("M-g e" . consult-compile-error)
-         ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
-         ("M-g g" . consult-goto-line)             ;; orig. goto-line
+         ("M-g e"   . consult-compile-error)
+         ("M-g f"   . consult-flymake)               ;; Alternative: consult-flycheck
+         ("M-g g"   . consult-goto-line)             ;; orig. goto-line
          ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
-         ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
-         ("M-g m" . consult-mark)
-         ("M-g k" . consult-global-mark)
-         ("M-g i" . consult-imenu)
-         ("M-g I" . consult-imenu-multi)
+         ("M-g o"   . consult-outline)               ;; Alternative: consult-org-heading
+         ("M-g m"   . consult-mark)
+         ("M-g k"   . consult-global-mark)
+         ("M-g i"   . consult-imenu)
+         ("M-g I"   . consult-imenu-multi)
          ;; M-s bindings in `search-map'
-         ("M-s d" . consult-find)
-         ("M-s D" . consult-locate)
-         ("M-s g" . consult-grep)
-         ("M-s G" . consult-git-grep)
-         ("M-s r" . consult-ripgrep)
-         ("M-s l" . consult-line)
-         ("M-s L" . consult-line-multi)
-         ("M-s k" . consult-keep-lines)
-         ("M-s u" . consult-focus-lines)
+         ("M-s d"   . consult-find)
+         ("M-s D"   . consult-locate)
+         ("M-s g"   . consult-grep)
+         ("M-s G"   . consult-git-grep)
+         ("M-s r"   . consult-ripgrep)
+         ("M-s l"   . consult-line)
+         ("M-s L"   . consult-line-multi)
+         ("M-s k"   . consult-keep-lines)
+         ("M-s u"   . consult-focus-lines)
          ;; Isearch integration
-         ("M-s e" . consult-isearch-history)
+         ("M-s e"   . consult-isearch-history)
          :map isearch-mode-map
-         ("M-e"   . consult-isearch-history)       ;; orig. isearch-edit-string
-         ("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
-         ("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
-         ("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
+         ("M-e"     . consult-isearch-history)       ;; orig. isearch-edit-string
+         ("M-s e"   . consult-isearch-history)       ;; orig. isearch-edit-string
+         ("M-s l"   . consult-line)                  ;; needed by consult-line to detect isearch
+         ("M-s L"   . consult-line-multi)            ;; needed by consult-line to detect isearch
 
          ;; Minibuffer history
          :map minibuffer-local-map
-         ("C-s" . (lambda ()
-                    "Insert the selected region or current symbol at point."
-                    (interactive)
-                    (insert (with-current-buffer
-                                (window-buffer (minibuffer-selected-window))
-                              (or (and transient-mark-mode mark-active (/= (point) (mark))
-                                       (buffer-substring-no-properties (point) (mark)))
-		                          (thing-at-point 'symbol t)
-                                  "")))))
          ("M-s" . consult-history)                 ;; orig. next-matching-history-element
          ("M-r" . consult-history))                ;; orig. previous-matching-history-element
 
@@ -200,8 +178,7 @@ value of the selected COLOR."
                           :prompt "Emacs color: "
                           :require-match t
                           :category 'color
-                          :history '(:input consult-colors-history)
-                          )))
+                          :history '(:input consult-colors-history))))
     (insert color))
 
   ;; Adapted from counsel.el to get web colors.
@@ -220,20 +197,23 @@ value of the selected COLOR."
                           :prompt "Color: "
                           :require-match t
                           :category 'color
-                          :history '(:input consult-colors-history)
-                          )))
+                          :history '(:input consult-colors-history))))
     (insert color))
   :config
   ;; Optionally configure preview. The default value
   ;; is 'any, such that any key triggers the preview.
   ;; (setq consult-preview-key 'any)
   ;; (setq consult-preview-key '("S-<down>" "S-<up>"))
-  (setq consult-preview-key '(:debounce 1.0 any))
+  (setq consult-preview-key nil)
   ;; For some commands and buffer sources it is useful to configure the
   ;; :preview-key on a per-command basis using the `consult-customize' macro.
   (consult-customize
-   consult-goto-line
-   consult-theme :preview-key '(:debounce 0.5 any))
+   consult-line consult-line-multi :preview-key 'any
+   consult-buffer consult-recent-file consult-theme :preview-key '(:debounce 1.0 any)
+   consult-goto-line :preview-key '(:debounce 0.5 any)
+   consult-ripgrep consult-git-grep consult-grep
+   :initial (selected-region-or-symbol-at-point)
+   :preview-key '(:debounce 0.5 any))
 
   ;; Optionally configure the narrowing key.
   ;; Both < and C-+ work reasonably well.
@@ -318,6 +298,58 @@ targets."
   :bind (:map minibuffer-mode-map
          ("C-c C-o" . embark-export))
   :hook (embark-collect-mode . consult-preview-at-point-mode))
+
+;; Auto completion
+(use-package corfu
+  :custom
+  (corfu-auto t)
+  (corfu-auto-prefix 2)
+  (corfu-preview-current nil)
+  (corfu-auto-delay 0.2)
+  (corfu-popupinfo-delay '(0.4 . 0.2))
+  :custom-face
+  (corfu-border ((t (:inherit region :background unspecified))))
+  :bind ("M-/" . completion-at-point)
+  :hook ((after-init . global-corfu-mode)
+         (global-corfu-mode . corfu-popupinfo-mode)))
+
+(unless (display-graphic-p)
+  (use-package corfu-terminal
+    :hook (global-corfu-mode . corfu-terminal-mode)))
+
+;; A few more useful configurations...
+(use-package emacs
+  :custom
+  ;; TAB cycle if there are only few candidates
+  ;; (completion-cycle-threshold 3)
+
+  ;; Enable indentation+completion using the TAB key.
+  ;; `completion-at-point' is often bound to M-TAB.
+  (tab-always-indent 'complete)
+
+  ;; Emacs 30 and newer: Disable Ispell completion function. As an alternative,
+  ;; try `cape-dict'.
+  (text-mode-ispell-word-completion nil)
+
+  ;; Emacs 28 and newer: Hide commands in M-x which do not apply to the current
+  ;; mode.  Corfu commands are hidden, since they are not used via M-x. This
+  ;; setting is useful beyond Corfu.
+  (read-extended-command-predicate #'command-completion-default-include-p))
+
+(use-package nerd-icons-corfu
+  :after corfu
+  :init (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+
+;; Add extensions
+(use-package cape
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-elisp-block)
+  (add-to-list 'completion-at-point-functions #'cape-keyword)
+  (add-to-list 'completion-at-point-functions #'cape-abbrev)
+
+  (advice-add 'eglot-completion-at-point :around #'cape-wrap-buster))
 
 (provide 'init-completion)
 
