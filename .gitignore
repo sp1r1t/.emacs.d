@@ -30,6 +30,9 @@
 /GTAGS
 /TAGS
 /bookmarks
+/custom-post.el
+/custom.el
+/gt-known-words.txt
 /history
 /nov-places
 /package-quickstart.el
@@ -86,3 +89,4 @@ workspace/
 /projectile-bookmarks.eld
 /quelpa/
 /org-persist/*
+multisession/files/emoji/emoji--recent.value
