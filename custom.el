@@ -144,14 +144,6 @@
 (setq mac-command-modifier 'super)
 
 
-;; corfu
-;; corfu complete on tab
-(define-key corfu-map [tab] 'corfu-complete)
-(define-key corfu-map [?\t] 'corfu-complete)
-
-;; disable corfu complete on enter
-(define-key corfu-map [return] nil)
-(define-key corfu-map [?\r] nil)
 
 
 ;;; custom.el ends here

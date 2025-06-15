@@ -40,9 +40,6 @@
 
 
 ;; Corfu mode
-;; only expand on RET
-(define-key corfu-map (kbd "TAB") nil)
-(define-key corfu-map (kbd "RET") 'corfu-insert)
 
 ;; Scroll Margin
 (setq scroll-margin 5)
