@@ -1,6 +1,6 @@
 ;; init-utils.el --- Initialize ultilities.	-*- lexical-binding: t -*-
 
-;; Copyright (C) 2006-2024 Vincent Zhang
+;; Copyright (C) 2006-2025 Vincent Zhang
 
 ;; Author: Vincent Zhang <seagle0128@gmail.com>
 ;; URL: https://github.com/seagle0128/.emacs.d
@@ -29,6 +29,9 @@
 ;;
 
 ;;; Code:
+
+(eval-when-compile
+  (require 'init-const))
 
 ;; Display available keybindings in popup
 (use-package which-key
@@ -260,6 +263,7 @@
 ;; Misc
 (use-package disk-usage)
 (use-package memory-usage)
+(use-package reveal-in-folder)
 
 (use-package list-environment
   :init
@@ -275,10 +279,6 @@
                              `(,val face font-lock-string-face)))))
               process-environment))
     (advice-add #'list-environment-entries :override #'my-list-environment-entries)))
-
-(unless sys/win32p
-  (use-package daemons)                 ; system services/daemons
-  (use-package tldr))
 
 (provide 'init-utils)
 

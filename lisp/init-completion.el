@@ -1,6 +1,6 @@
 ;;; init-completion.el --- Initialize completion configurations.	-*- lexical-binding: t -*-
 
-;; Copyright (C) 2016-2024 Vincent Zhang
+;; Copyright (C) 2016-2025 Vincent Zhang
 
 ;; Author: Vincent Zhang <seagle0128@gmail.com>
 ;; URL: https://github.com/seagle0128/.emacs.d
@@ -42,9 +42,10 @@
   :after orderless
   :autoload pinyinlib-build-regexp-string
   :init
-  (defun completion--regex-pinyin (str)
+  (defun orderless-regexp-pinyin (str)
+    "Match COMPONENT as a pinyin regex."
     (orderless-regexp (pinyinlib-build-regexp-string str)))
-  (add-to-list 'orderless-matching-styles 'completion--regex-pinyin))
+  (add-to-list 'orderless-matching-styles 'orderless-regexp-pinyin))
 
 (use-package vertico
   :custom (vertico-count 15)
@@ -55,14 +56,13 @@
   :hook ((after-init . vertico-mode)
          (rfn-eshadow-update-overlay . vertico-directory-tidy)))
 
-(when (childframe-completion-workable-p)
-  (use-package vertico-posframe
-    :hook (vertico-mode . vertico-posframe-mode)
-    :init (setq vertico-posframe-poshandler
-                #'posframe-poshandler-frame-center-near-bottom
-                vertico-posframe-parameters
-                '((left-fringe  . 8)
-                  (right-fringe . 8)))))
+(use-package vertico-posframe
+  :hook (vertico-mode . vertico-posframe-mode)
+  :init (setq vertico-posframe-poshandler
+              #'posframe-poshandler-frame-center-near-bottom
+              vertico-posframe-parameters
+              '((left-fringe  . 8)
+                (right-fringe . 8))))
 
 (use-package nerd-icons-completion
   :when (icons-displayable-p)
