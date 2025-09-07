@@ -663,6 +663,19 @@ s   Search for keywords                 M   Like m, but only TODO entries
 (setq org-babel-default-header-args
       '((:results . "verbatim")))
 
+;; Make JS blocks non-session by default
+(with-eval-after-load 'ob-js
+  (setq org-babel-default-header-args:js
+        (let ((alist org-babel-default-header-args:js))
+          (assq-delete-all :session alist)
+          (push '(:session . "none") alist)
+          ;; optional but nice defaults:
+          (assq-delete-all :results alist)
+          (push '(:results . "output") alist)
+          alist)))
+
+(org-babel-do-load-languages 'org-babel-load-languages '((js . t)))
+
 ;; Convenience Functions
 (defun insert-week-of-year ()
   "Insert the current week of the year."
@@ -678,5 +691,8 @@ s   Search for keywords                 M   Like m, but only TODO entries
 
 ;; fallback font
 (set-fontset-font t 'unicode "Noto Sans Symbols 2" nil 'prepend)
+
+
+
 
 ;;; custom-org.el ends here
