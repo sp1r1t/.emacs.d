@@ -676,4 +676,7 @@ s   Search for keywords                 M   Like m, but only TODO entries
 ;; don't evaluate babel on save
 (setq org-export-babel-evaluate nil)
 
+;; fallback font
+(set-fontset-font t 'unicode "Noto Sans Symbols 2" nil 'prepend)
+
 ;;; custom-org.el ends here
