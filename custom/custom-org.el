@@ -693,6 +693,4 @@ s   Search for keywords                 M   Like m, but only TODO entries
 (set-fontset-font t 'unicode "Noto Sans Symbols 2" nil 'prepend)
 
 
-
-
 ;;; custom-org.el ends here
