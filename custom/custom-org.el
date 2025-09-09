@@ -661,7 +661,7 @@ s   Search for keywords                 M   Like m, but only TODO entries
 
 ;; org babel
 (setq org-babel-default-header-args
-      '((:results . "verbatim")))
+      '((:results . "replace verbatim output")))
 
 ;; Make JS blocks non-session by default
 (with-eval-after-load 'ob-js
