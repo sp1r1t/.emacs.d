@@ -34,12 +34,11 @@
 
 
 ;; Load custom configs
+(message "Loading custom configurations from ~/.emacs.d/custom/")
 (dolist (file  (directory-files (concat user-emacs-directory "/custom") t "custom.*\\.el$"))
   (load-file file))
 
 
-
-;; Corfu mode
 
 ;; Scroll Margin
 (setq scroll-margin 5)
