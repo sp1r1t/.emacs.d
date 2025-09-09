@@ -113,16 +113,32 @@
 ;; (put 'pdf-view-create-image 'lisp-indent-function 'defun)
 ;; (put 'treemacs-create-theme 'lisp-indent-function 'defun)
 
+(setq my-agenda-files '("7bit.org" "evo.org"
+                        "Document.org" "Menschen.org"
+                        "Verborgt.org" "WMS.org"
+                        "articles.org" "body.org"
+                        "cwc-website.org" "emacs.org"
+                        "finanzen.org" "haushalt.org"
+                        "inbox.org" "job.org"
+                        "linuxlog.org" "mind.org"
+                        "projects.org" "someday.org"
+                        "tickler.org" "wochenmenu.org"))
+
+(setq my-agenda-files-full-path (mapcar (lambda (file) (expand-file-name file centaur-org-directory)) my-agenda-files))
+
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(gptel-model "gpt-4")
  '(org-agenda-files
-   '("/Users/jinn/org/7bit.org" "/Users/jinn/org/evo.org" "/Users/jinn/org/Document.org" "/Users/jinn/org/Menschen.org" "/Users/jinn/org/Verborgt.org" "/Users/jinn/org/WMS.org" "/Users/jinn/org/articles.org" "/Users/jinn/org/body.org" "/Users/jinn/org/cwc-website.org" "/Users/jinn/org/emacs.org" "/Users/jinn/org/finanzen.org" "/Users/jinn/org/haushalt.org" "/Users/jinn/org/inbox.org" "/Users/jinn/org/job.org" "/Users/jinn/org/linuxlog.org" "/Users/jinn/org/mind.org" "/Users/jinn/org/projects.org" "/Users/jinn/org/someday.org" "/Users/jinn/org/tickler.org" "/Users/jinn/org/wochenmenu.org"))
+   my-agenda-files-full-path)
  '(org-html-postamble 'auto)
  '(org-html-postamble-format
-   '(("en" "<p class=\"author\">Author: %a (%e)</p>\12<p class=\"date\">Date: %d</p>")))
+   '(("en"
+      "<p class=\"author\">Author: %a (%e)</p>\12<p class=\"date\">Date: %d</p>")))
  '(org-html-preamble t))
 
 (custom-set-faces
@@ -139,11 +155,16 @@
  '(ediff-odd-diff-B ((t (:background "#eeeeee")))))
 
 ;; OSX/mac config
-(setq mac-option-modifier 'nil)
-(setq mac-function-modifier 'meta)
+(setq mac-option-modifier 'meta)
+;; (setq mac-function-modifier 'meta)
 (setq mac-command-modifier 'super)
 
+;; font
+(set-frame-font "Hack Nerd Font-13" nil t)
 
-
+;; ut8 encoding
+(prefer-coding-system 'utf-8)
+(set-language-environment "UTF-8")
+(set-default-coding-systems 'utf-8)
 
 ;;; custom.el ends here
