@@ -12,7 +12,8 @@
 
   ;; disable corfu complete on enter
   (define-key corfu-map [return] nil)
-  (define-key corfu-map [?\nil] r)
+  (define-key corfu-map [?\r] nil)
+
   )
 
 
