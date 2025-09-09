@@ -143,7 +143,4 @@
 (setq mac-function-modifier 'meta)
 (setq mac-command-modifier 'super)
 
-
-
-
 ;;; custom.el ends here
