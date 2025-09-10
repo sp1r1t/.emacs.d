@@ -133,13 +133,14 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(gptel-model "gpt-4")
- '(org-agenda-files
-   my-agenda-files-full-path)
+ '(org-agenda-files my-agenda-files-full-path)
  '(org-html-postamble 'auto)
  '(org-html-postamble-format
    '(("en"
       "<p class=\"author\">Author: %a (%e)</p>\12<p class=\"date\">Date: %d</p>")))
- '(org-html-preamble t))
+ '(org-html-preamble t)
+ '(package-vc-selected-packages
+   '((ultra-scroll :vc-backend Git :url "https://github.com/jdtsmith/ultra-scroll"))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
