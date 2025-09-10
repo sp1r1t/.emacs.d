@@ -43,6 +43,7 @@
                pdf-view-midnight-minor-mode
                pdf-view-printer-minor-mode)
     :defines pdf-annot-activate-created-annotations
+    :functions pdf-tools-install
     :hook ((pdf-tools-enabled . pdf-view-auto-slice-minor-mode)
            (pdf-tools-enabled . pdf-isearch-minor-mode))
     :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
@@ -60,6 +61,7 @@
     (use-package saveplace-pdf-view
       :when (ignore-errors (pdf-info-check-epdfinfo) t)
       :autoload (saveplace-pdf-view-find-file-advice saveplace-pdf-view-to-alist-advice)
+      :functions pdf-info-check-epdfinfo
       :init
       (advice-add 'save-place-find-file-hook :around #'saveplace-pdf-view-find-file-advice)
       (advice-add 'save-place-to-alist :around #'saveplace-pdf-view-to-alist-advice))))
@@ -117,7 +119,7 @@
      ("u" elfeed-search-tag-all-unread "mark unread")
      ("r" elfeed-search-untag-all-unread "mark read")
      ("RET" elfeed-search-show-entry "show"))))
-  :bind (("C-x w" . elfeed)
+  :bind (("C-x j" . elfeed)
          :map elfeed-search-mode-map
          ("?" . elfeed-hydra/body)
          :map elfeed-show-mode-map
@@ -222,7 +224,7 @@ browser defined by `browse-url-generic-program'."
 ;; Another Atom/RSS reader
 (use-package newsticker
   :ensure nil
-  :bind ("C-x W" . newsticker-show-news)
+  :bind ("C-x J" . newsticker-show-news)
   :hook (newsticker-treeview-item-mode . centaur-read-mode)
   :init (setq newsticker-url-list
               '(("Planet Emacslife" "https://planet.emacslife.com/atom.xml")

@@ -172,7 +172,7 @@ For Example:
 (setq centaur-package-archives 'melpa)         ; Package repo: melpa, bfsu, iscas, netease, sjtu, tencent, tuna or ustc
 (setq centaur-theme 'auto)                     ; Color theme: auto, random, system, default, pro, dark, light, warm, cold, day or night
 (setq centaur-completion-style 'minibuffer)    ; Completion display style: minibuffer or childframe
-(setq centaur-frame-maximized-on-startup nil)  ; Maximize frame on startup or not
+(setq centaur-frame-maximized-on-startup t)    ; Maximize frame on startup or not
 (setq centaur-dashboard nil)                   ; Display dashboard at startup or not: t or nil
 (setq centaur-lsp 'lsp-mode)                   ; Set LSP client: lsp-mode, eglot or nil
 (setq centaur-lsp-format-on-save t)            ; Auto format buffers on save: t or nil
@@ -181,7 +181,6 @@ For Example:
 (setq centaur-chinese-calendar nil)            ; Support Chinese calendar or not: t or nil
 (setq centaur-player t)                        ; Enable players or not: t or nil
 (setq centaur-prettify-symbols-alist nil)      ; Alist of symbol prettifications. Nil to use font supports ligatures.
-(setq centaur-prettify-org-symbols-alist nil)  ; Alist of symbol prettifications for `org-mode'
 ```
 
 The default package archives is `melpa`. You can change it in `custom.el`, or

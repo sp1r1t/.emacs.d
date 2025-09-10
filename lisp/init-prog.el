@@ -34,6 +34,9 @@
   (require 'init-const)
   (require 'init-custom))
 
+(declare-function centaur-treesit-available-p "init-funcs")
+(declare-function childframe-workable-p "init-funcs")
+
 ;; ---------------------------------------------------------------------------
 ;; Code Display & Utilities
 ;; ---------------------------------------------------------------------------
@@ -66,7 +69,6 @@
   :config
   (when (childframe-workable-p)
     (use-package eldoc-box
-      :diminish (eldoc-box-hover-mode eldoc-box-hover-at-point-mode)
       :custom
       (eldoc-box-lighter nil)
       (eldoc-box-only-multi-line t)
@@ -80,23 +82,9 @@
       (setf (alist-get 'left-fringe eldoc-box-frame-parameters) 8
             (alist-get 'right-fringe eldoc-box-frame-parameters) 8))))
 
-;; Search tool
-(use-package grep
-  :ensure nil
-  :autoload grep-apply-setting
-  :init
-  (when (executable-find "rg")
-    (grep-apply-setting
-     'grep-command "rg --color=auto --null -nH --no-heading -e ")
-    (grep-apply-setting
-     'grep-template "rg --color=auto --null --no-heading -g '!*/' -e <R> <D>")
-    (grep-apply-setting
-     'grep-find-command '("rg --color=auto --null -nH --no-heading -e ''" . 38))
-    (grep-apply-setting
-     'grep-find-template "rg --color=auto --null -nH --no-heading -e <R> <D>")))
-
 ;; Cross-referencing commands
 (use-package xref
+  :autoload xref-show-definitions-completing-read
   :bind (("M-g ." . xref-find-definitions)
          ("M-g ," . xref-go-back))
   :init
@@ -120,7 +108,8 @@
 
 ;; Browse devdocs.io documents using EWW
 (use-package devdocs
-  :autoload (devdocs--installed-docs devdocs--available-docs)
+  :autoload devdocs--available-docs
+  :commands (devdocs-install devdocs-lookup)
   :bind (:map prog-mode-map
          ("M-<f1>" . devdocs-dwim)
          ("C-h D"  . devdocs-dwim))
@@ -173,11 +162,10 @@ Install the doc if it's not installed."
 ;; ---------------------------------------------------------------------------
 ;; Miscellaneous Programming Modes
 ;; ---------------------------------------------------------------------------
-(use-package csv-mode)
-(unless emacs/>=29p
-  (use-package csharp-mode))
 (use-package cask-mode)
 (use-package cmake-mode)
+(use-package csv-mode)
+(use-package cue-sheet-mode)
 (use-package dart-mode)
 (use-package julia-mode)
 (use-package lua-mode)
@@ -203,9 +191,15 @@ Install the doc if it's not installed."
 
 ;; Fish shell mode and auto-formatting
 (use-package fish-mode
+  :commands fish_indent-before-save
+  :defines eglot-server-programs
   :hook (fish-mode . (lambda ()
                        "Integrate `fish_indent` formatting with Fish shell mode."
-                       (add-hook 'before-save-hook #'fish_indent-before-save))))
+                       (add-hook 'before-save-hook #'fish_indent-before-save)))
+  :config
+  (with-eval-after-load 'eglot
+    (add-to-list 'eglot-server-programs
+                 '(fish-mode . ("fish-lsp" "start")))))
 
 (provide 'init-prog)
 

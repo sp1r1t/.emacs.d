@@ -30,7 +30,11 @@
 
 ;;; Code:
 
-(require 'subr-x)
+;; Suppress warnings
+(eval-when-compile
+  (require 'init-const)
+  (require 'init-custom))
+
 (require 'init-funcs)
 
 ;; Compatibility
@@ -74,7 +78,7 @@
     (setq command-line-x-option-alist nil))
 
   ;; Increase how much is read from processes in a single chunk (default is 4kb)
-  (setq read-process-output-max #x10000)  ; 64kb
+  (setq read-process-output-max #x100000)  ; 1MB
 
   ;; Don't ping things that look like domain names.
   (setq ffap-machine-p-known 'reject))
@@ -108,8 +112,9 @@
   (set-selection-coding-system 'utf-8))
 
 ;; Environment
-(when (or sys/mac-x-p sys/linux-x-p (daemonp))
+(when (or (memq window-system '(mac ns x)) (daemonp))
   (use-package exec-path-from-shell
+    :commands exec-path-from-shell-initialize
     :custom (exec-path-from-shell-arguments '("-l"))
     :init (exec-path-from-shell-initialize)))
 
@@ -275,7 +280,7 @@
                2)))))
 
 ;; Global keybindings
-(bind-keys ("s-r"     . revert-this-buffer)
+(bind-keys ("s-r"     . revert-buffer-quick)
            ("C-x K"   . delete-this-file)
            ("C-c C-l" . reload-init-file))
 
