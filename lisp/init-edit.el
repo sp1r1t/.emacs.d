@@ -30,6 +30,9 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (require 'init-const))
+
 ;; Delete selection if you insert
 (use-package delsel
   :ensure nil
@@ -128,20 +131,32 @@
          ("M-Z" . avy-zap-up-to-char-dwim)))
 
 ;; Quickly follow links
-(use-package link-hint
-  :bind (("M-o" . link-hint-open-link)
-         ("C-c l o" . link-hint-open-link)
-         ("C-c l c" . link-hint-copy-link))
-  :init
-  (with-eval-after-load 'embark
-    (setq link-hint-action-fallback-commands
-          (list :open (lambda ()
-                        (condition-case _
-                            (progn
-                              (embark-dwim)
-                              t)
-                          (error
-                           nil)))))))
+(use-package ace-link
+  :bind ("M-o" . ace-link-addr)
+  :hook (after-init . ace-link-setup-default)
+  :config
+  (with-no-warnings
+    (bind-keys
+     :map package-menu-mode-map
+     ("o" . ace-link-help)
+     :map process-menu-mode-map
+     ("o" . ace-link-help))
+
+    (with-eval-after-load 'org
+      (bind-key "M-o" #'ace-link-org org-mode-map))
+
+    (with-eval-after-load 'gnus
+      (bind-keys
+       :map gnus-summary-mode-map
+       ("M-o" . ace-link-gnus)
+       :map gnus-article-mode-map
+       ("M-o" . ace-link-gnus)))
+
+    (with-eval-after-load 'ert
+      (bind-key "o" #'ace-link-help ert-results-mode-map))
+
+    (with-eval-after-load 'elfeed
+      (bind-key "o" #'ace-link elfeed-show-mode-map))))
 
 ;; Jump to Chinese characters
 (use-package ace-pinyin
@@ -151,6 +166,8 @@
 ;; Minor mode to aggressively keep your code always indented
 (use-package aggressive-indent
   :diminish
+  :autoload aggressive-indent-mode
+  :functions too-long-file-p
   :hook ((after-init . global-aggressive-indent-mode)
          ;; NOTE: Disable in large files due to the performance issues
          ;; https://github.com/Malabarba/aggressive-indent-mode/issues/73
@@ -192,6 +209,7 @@
 ;; Redefine M-< and M-> for some modes
 (use-package beginend
   :diminish beginend-global-mode
+  :functions diminish
   :hook (after-init . beginend-global-mode)
   :config (mapc (lambda (pair)
                   (diminish (cdr pair)))
@@ -243,6 +261,7 @@
 
 ;; Increase selected region by semantic units
 (use-package expand-region
+  :functions centaur-treesit-available-p treesit-buffer-root-node
   :bind ("C-=" . er/expand-region)
   :config
   (when (centaur-treesit-available-p)
@@ -305,11 +324,12 @@
   :diminish
   :if (executable-find "aspell")
   :hook (((text-mode outline-mode) . flyspell-mode)
-         ;; (prog-mode . flyspell-prog-mode)
+         (prog-mode . flyspell-prog-mode)
          (flyspell-mode . (lambda ()
                             (dolist (key '("C-;" "C-," "C-."))
                               (unbind-key key flyspell-mode-map)))))
   :init (setq flyspell-issue-message-flag nil
+              flyspell-issue-welcome-flag nil
               ispell-program-name "aspell"
               ispell-extra-args '("--sug-mode=ultra" "--lang=en_US" "--run-together")))
 

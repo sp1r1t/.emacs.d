@@ -31,26 +31,29 @@
 ;;; Code:
 
 (use-package hydra
+  :defines posframe-border-width
+  :functions childframe-completion-workable-p
   :hook (emacs-lisp-mode . hydra-add-imenu)
   :init
   (when (childframe-completion-workable-p)
     (setq hydra-hint-display-type 'posframe)
-
-    (defun hydra-set-posframe-show-params ()
-      "Set hydra-posframe style."
-      (setq hydra-posframe-show-params
-            `(:left-fringe 8
-              :right-fringe 8
-              :internal-border-width ,posframe-border-width
-              :internal-border-color ,(face-background 'posframe-border nil t)
-              :background-color ,(face-background 'tooltip nil t)
-              :foreground-color ,(face-foreground 'tooltip nil t)
-              :lines-truncate t
-              :poshandler posframe-poshandler-frame-center-near-bottom)))
-    (hydra-set-posframe-show-params)
-    (add-hook 'after-load-theme-hook #'hydra-set-posframe-show-params t)))
+    (with-no-warnings
+      (defun hydra-set-posframe-show-params ()
+        "Set hydra-posframe style."
+        (setq hydra-posframe-show-params
+              `(:left-fringe 8
+                :right-fringe 8
+                :internal-border-width ,posframe-border-width
+                :internal-border-color ,(face-background 'posframe-border nil t)
+                :background-color ,(face-background 'tooltip nil t)
+                :foreground-color ,(face-foreground 'tooltip nil t)
+                :lines-truncate t
+                :poshandler posframe-poshandler-frame-center-near-bottom)))
+      (hydra-set-posframe-show-params)
+      (add-hook 'after-load-theme-hook #'hydra-set-posframe-show-params t))))
 
 (use-package pretty-hydra
+  :functions icons-displayable-p
   :bind ("<f6>" . toggles-hydra/body)
   :hook (emacs-lisp-mode . (lambda ()
                              (add-to-list
@@ -119,7 +122,7 @@
        "Theme"
        (("t a" (centaur-load-theme 'auto) "auto"
          :toggle (eq centaur-theme 'auto) :exit t)
-        ("t m" (centaur-load-theme 'random) "random"
+        ("t r" (centaur-load-theme 'random) "random"
          :toggle (eq centaur-theme 'random) :exit t)
         ("t s" (centaur-load-theme 'system) "system"
          :toggle (eq centaur-theme 'system) :exit t)
