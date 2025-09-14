@@ -39,10 +39,6 @@
   (load-file file))
 
 
-
-;; Scroll Margin
-(setq scroll-margin 5)
-
 ;; Primary selection
 (setq mouse-drag-copy-region t)
 (setq select-enable-clipboard t)
