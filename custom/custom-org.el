@@ -686,6 +686,10 @@ s   Search for keywords                 M   Like m, but only TODO entries
 ;; custom keybindings
 (global-set-key (kbd "C-c l s") 'org-store-link)
 
+(keymap-unset org-mode-map "C-,")
+(keymap-unset org-mode-map "C-'")
+
+
 ;; don't evaluate babel on save
 (setq org-export-babel-evaluate nil)
 
