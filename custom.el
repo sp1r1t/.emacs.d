@@ -79,7 +79,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(gptel-model "gpt-4")
  '(org-agenda-files my-agenda-files-full-path)
  '(org-html-postamble 'auto)
  '(org-html-postamble-format
