@@ -1,6 +1,6 @@
 
 (use-package ob-mermaid)
-(setq ob-mermaid-cli-path "/Users/julian/.nvm/versions/node/v20.18.0/bin/mmdc")
+(setq ob-mermaid-cli-path "/opt/homebrew/bin/mmdc")
 
 (org-babel-do-load-languages
  'org-babel-load-languages
