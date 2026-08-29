@@ -121,4 +121,8 @@
 ;; global key bindings
 (define-key global-map (kbd "C-x C-n") 'consult-buffer)
 
+;; Note: in an `eat' terminal buffer (used by claude-code-ide), `C-c C-e'
+;; switches to eat-emacs-mode (normal Emacs keybindings); `C-c C-j' switches
+;; back to eat-semi-char-mode (normal terminal input).
+
 ;;; custom.el ends here
